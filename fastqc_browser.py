@@ -10,7 +10,7 @@ import readline
 
 def handle_arguments():
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("-i", "--input-directory", help="Path to parent directory containing all sample directories", required=False)
+    parser.add_argument("-i", "--input-directory", help="Path to parent directory containing all sample directories. Provide absolute paths", required=False)
     parser.add_argument("-h", "--help", help="Print help text", action="store_true", required=False)
     args = parser.parse_args()
 
@@ -190,8 +190,6 @@ def read_input(sample_manager):
 
         # Read HTML report
         if choice.startswith("open_sample_html_report"):
-
-            # TODO: Check if browser is available before printing (e.g. on Abel, it won't work)
 
             # Set auto-completer for sample names
             completer = MyCompleter(all_sample_names)
