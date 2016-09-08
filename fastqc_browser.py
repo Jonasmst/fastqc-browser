@@ -56,9 +56,10 @@ def open_html_report(path):
     Opens a given html file in a webbrowser
     """
     try:
+        webbrowser.get()
         webbrowser.open("file://" + os.path.realpath(path))
-    except webbrowser.Error:
-        print "Something went wrong when opening webbrowser"
+    except webbrowser.Error as e:
+        print "Webbrowser error:", e
 
 
 def print_query_help():
