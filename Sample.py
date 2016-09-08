@@ -3,45 +3,47 @@ import zipfile
 import shutil
 import sys
 
-
 class Sample(object):
 
     def handle_read_libraries(self):
+        # TODO: Add to documentation that these zip-files are expected (required)
         # Find zipped files
-        for f in os.listdir(self.main_directory):
-            if f.endswith(".zip"):
+        zipped_files = [f for f in os.listdir(self.main_directory) if f.endswith(".zip")]
 
-                # Get sample dir path
-                sample_path = os.path.join(self.parent_dir, self.main_directory)
+        # If no zip-files are found, exit
+        if len(zipped_files) == 0:
+            print "ERROR: No zip-files containing FastQC info found in %s. Exiting" % self.main_directory
+            sys.exit()
 
-                # Get absolute path
-                abs_path = os.path.abspath(os.path.join(sample_path, f))
+        # If there's more than 2 zip-files, I don't know what to do with them
+        if len(zipped_files) > 2:
+            print "ERROR: More than two (%d) zip-files found in %s. I don't know how to handle more than 2. Exiting." % (len(zipped_files), self.main_directory)
+            sys.exit()
 
-                # Unzip file
-                zip_ref = zipfile.ZipFile(abs_path, "r")
+        # Handle zip files
+        for f in sorted(zipped_files):
+            # Get sample dir path
+            sample_path = os.path.join(self.parent_dir, self.main_directory)
 
-                # Get unzipped dirname
-                unzipped_dirname = abs_path.split(".zip")[0]
+            # Get absolute path
+            abs_path = os.path.abspath(os.path.join(sample_path, f))
 
-                # Delete unzipped dir if already exists
-                if os.path.exists(unzipped_dirname) and os.path.isdir(unzipped_dirname):
-                    shutil.rmtree(unzipped_dirname)
+            # Unzip file
+            zip_ref = zipfile.ZipFile(abs_path, "r")
 
-                # Extract content
-                zip_ref.extractall(sample_path)
+            # Get unzipped dirname
+            unzipped_dirname = abs_path.split(".zip")[0]
 
-                # Get dir basename
-                basename = os.path.basename(os.path.normpath(unzipped_dirname))
+            # Delete unzipped dir if already exists
+            if os.path.exists(unzipped_dirname) and os.path.isdir(unzipped_dirname):
+                shutil.rmtree(unzipped_dirname)
 
-                # Get read/PE number
-                # TODO: This is a really experiment-specific implementation
-                read_number = int("".join(basename.split("_")[1].split("R")))
+            # Extract content
+            zip_ref.extractall(sample_path)
 
-                # Store reference to read
-                if read_number not in self.read_dirs.keys():
-                    self.read_dirs[read_number] = unzipped_dirname
-                else:
-                    print "Read entry (%d) already present in sample %s" % (read_number, unzipped_dirname)
+            # Assign read-number according to position in list of zip-files
+            pos = sorted(zipped_files).index(f) + 1
+            self.read_dirs[pos] = unzipped_dirname
 
     def locate_summary_files(self):
         # Traverse read directories and find summary files
