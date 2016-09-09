@@ -264,6 +264,65 @@ class SampleManager(object):
 
             print row_module + status_str
 
+    def print_sample_details_by_readnumber(self, sample_name, read_number):
+        """
+        Same as print_sample_details(), but only for one specific read number
+        """
+
+        # Get sample object
+        sample = self.get_sample_by_name(sample_name)
+
+        # Print header
+        self.print_header(" SINGLE-FASTQ SAMPLE DETAIL ", 75, "=")
+
+        # Loop modules for this read file
+        statuses = []
+        for module, moduleinfo in sample.modules.items():
+            # Get only status for this read number
+            module_status = moduleinfo[read_number]
+            statuses.append(module_status)
+
+        num_p = statuses.count("PASS")
+        num_w = statuses.count("WARN")
+        num_f = statuses.count("FAIL")
+        total = float(num_p + num_w + num_f)
+        pct_p = (num_p / total) * 100
+        pct_w = (num_w / total) * 100
+        pct_f = (num_f / total) * 100
+        pct_p_str = "%.2f" % pct_p
+        pct_w_str = "%.2f" % pct_w
+        pct_f_str = "%.2f" % pct_f
+        passes = str(num_p) + " (" + pct_p_str + "%)"
+        warns = str(num_w) + " (" + pct_w_str + "%)"
+        fails = str(num_f) + " (" + pct_f_str + "%)"
+
+        # Print
+        print '{0:30}{1:15s}{2:15s}{3:15s}{4:15s}'.format("NAME", "FASTQ #", "PASS".center(15), "WARN".center(15), "FAIL".center(15))
+        print '{0:30}{1:15s}{2:15s}{3:15s}{4:15s}'.format(sample_name, str(read_number).center(5), passes.center(15), warns.center(15), fails.center(15))
+
+        # Print separator and header
+        print ""
+        self.print_header(" MODULES ", 75, "=", False)
+
+        # Print legend
+        leg_module = "{0:50}".format("NAME")
+        leg_status = "".join('{:10}'.format("STATUS"))
+        print leg_module + leg_status
+
+        # Loop modules again and print info for each module
+        for module, moduleinfo in sample.modules.items():
+            # Get only status for this read number
+            module_status = moduleinfo[read_number]
+
+            # Create string
+            row_module = '{0:50}'.format(module)
+
+            # Create status string
+            status_str = "".join('{:10}'.format(module_status))
+
+            # Print
+            print row_module + status_str
+
     def print_header(self, header, size, fillchar, padding=True):
         if padding:
             print "".center(size, fillchar)
