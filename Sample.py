@@ -3,6 +3,7 @@ import zipfile
 import shutil
 import sys
 
+
 class Sample(object):
 
     def handle_read_libraries(self):
@@ -67,6 +68,28 @@ class Sample(object):
                 else:
                     print "Summary file for read %d already present in sample %s" % (read_number, self.name)
 
+    def locate_fastq_data_files(self):
+        # Traverse read directories and find fastq_data files
+        for read_number, read_dir in self.read_dirs.items():
+
+            # Get sample path
+            sample_path = os.path.join(self.parent_dir, self.main_directory)
+
+            # Get absolute path
+            abs_read_dir = os.path.join(sample_path, read_dir)
+
+            # Expected path
+            fastqc_data_path = os.path.join(abs_read_dir, "fastqc_data.txt")
+            if not os.path.exists(fastqc_data_path):
+                print "No fastqc_data.txt found in %s in sample %s" % (read_dir, self.name)
+                continue
+            else:
+                # Store reference to fastqc data file
+                if read_number not in self.fastqc_data_files.keys():
+                    self.fastqc_data_files[read_number] = fastqc_data_path
+                else:
+                    print "Fastq data file for read %d already present in sample %s" % (read_number, self.name)
+
     def locate_html_reports(self):
         # Traverse read directories and find report files
         for read_number, read_dir in self.read_dirs.items():
@@ -126,6 +149,43 @@ class Sample(object):
                         else:
                             self.failures[read_num].append(module)
 
+    def parse_fastqc_data(self):
+
+        # Container to store data
+        container = {}
+
+        # Overview of data we want to keep
+        keep_data = ["Filename", "File type", "Encoding", "Total Sequences", "Sequences flagged as poor quality", "Sequence length", "%GC"]
+
+        # Loop fastq data files
+        for read_num, data_file in self.fastqc_data_files.items():
+
+            # Add read to container
+            container[read_num] = {}
+
+            # Read data file
+            with open(data_file) as f:
+                # Read each line
+                for line in f.readlines():
+
+                    # Split line by tabs
+                    stats = line.split("\t")
+
+                    # Sanity check results
+                    if len(stats) < 2:
+                        continue
+
+                    # Get info and description
+                    info = stats[0].rstrip()
+                    value = stats[1].rstrip()
+
+                    # Keep data if there's something we're intrested in
+                    if info in keep_data:
+                        container[read_num][info] = value
+
+        # Store container to self.fastqc_data
+        self.fastqc_data = container
+
     def get_html_report(self, read_number):
         # TODO: Sanity check
         return self.html_reports[read_number]
@@ -171,16 +231,20 @@ class Sample(object):
         self.name = os.path.basename(os.path.normpath(sample_dir))
         self.main_directory = sample_dir
         self.parent_dir = parent_dir
-        self.read_dirs = {}  # Format: readEndNumber: directoryName, e.g. 2:path_to_fastq2
+        self.read_dirs = {}  # Format: {read_number: directoryName}, e.g. 2:path_to_fastq2
         self.summary_files = {}
+        self.fastqc_data_files = {}
+        self.fastqc_data = {}  # Format: {read_number: {info_name: value}}
         self.html_reports = {}
-        self.warnings = {}  # Format: readNumber: [modules]
+        self.warnings = {}  # Format: r{ead_number: [modules]}
         self.passes = {}
         self.failures = {}
-        self.modules = {}  # Format: module_name: {read_num: status}
+        self.modules = {}  # Format: {module_name: {read_num: status}}
 
         # Do stuff
         self.handle_read_libraries()
         self.locate_summary_files()
         self.locate_html_reports()
         self.parse_summaries()
+        self.locate_fastq_data_files()
+        self.parse_fastqc_data()
