@@ -51,15 +51,17 @@ def setup_samples(parent_dir):
     return samples
 
 
-def open_html_report(path):
+def open_html_report(path, sample_manager, sample_name, read_number):
     """
-    Opens a given html file in a webbrowser
+    Opens a given html file in a webbrowser. If there is no webbrowser available,
+    a textual representation of the report (i.e. without figures) are fetched and displayed.
     """
     try:
         webbrowser.get()
         webbrowser.open("file://" + os.path.realpath(path))
     except webbrowser.Error as e:
-        print "Webbrowser error:", e
+        print "Something went wrong when opening webbrowser (Error: %s). Fall back to textual representation:" % e
+        sample_manager.print_sample_details_by_readnumber(sample_name, read_number)
 
 
 def print_query_help():
@@ -215,7 +217,7 @@ def read_input(sample_manager):
             read_number = int(raw_input(">>> Read file number: "))
 
             report = sample_manager.get_html_report_by_name_and_read(sample_name, read_number)
-            open_html_report(report)
+            open_html_report(report, sample_manager, sample_name, read_number)
 
             continue
 
