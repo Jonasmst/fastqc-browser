@@ -219,14 +219,17 @@ class SampleManager(object):
         :param sample_name: The name of the sample
         """
 
+        # Header length for this printout
+        header_length = 90
+
         # Get sample object
         sample = self.get_sample_by_name(sample_name)
 
         # Print header
-        self.print_header(" SAMPLE DETAIL ", 75, "=")
+        self.print_header(" SAMPLE DETAILS ", header_length, "=")
 
         # Print overview
-        print '{0:30}{1:15s}{2:15s}{3:15s}'.format("NAME", "PASS".center(15), "WARN".center(15), "FAIL".center(15))
+        print '{0:30}{1:15s}{2:15s}{3:15s}'.format("SAMPLE NAME", "PASS".center(15), "WARN".center(15), "FAIL".center(15))
         num_p = sample.get_number_of_passes()
         num_w = sample.get_number_of_warnings()
         num_f = sample.get_number_of_failures()
@@ -243,9 +246,23 @@ class SampleManager(object):
         # Print
         print '{0:30}{1:15s}{2:15s}{3:15s}'.format(sample_name, passes.center(15), warns.center(15), fails.center(15))
 
-        # Print separator
+        # Get FASTQC data from sample
+        for fastqc_number, fastqc_data in sample.fastqc_data.items():
+
+            # Print fastqc data
+            print ""
+            self.print_header(" FASTQC DATA - FASTQ #" + str(fastqc_number), header_length, "=", False)
+
+            # Print legend
+            print "{0:40}{1:50}".format("INFO", "VALUE")
+
+            # Print every entry
+            for info_name, value in fastqc_data.items():
+                print "{0:40}{1:50}".format(info_name, value)
+
+        # Print modules
         print ""
-        self.print_header(" MODULES ", 75, "=", False)
+        self.print_header(" MODULES ", header_length, "=", False)
 
         num_fastqs = len(sample.html_reports.keys())
 
@@ -269,11 +286,14 @@ class SampleManager(object):
         Same as print_sample_details(), but only for one specific read number
         """
 
+        # Length for headers in this printout
+        header_length = 95
+
         # Get sample object
         sample = self.get_sample_by_name(sample_name)
 
         # Print header
-        self.print_header(" SINGLE-FASTQ SAMPLE DETAIL ", 75, "=")
+        self.print_header(" SINGLE-FASTQ SAMPLE DETAIL ", header_length, "=")
 
         # Loop modules for this read file
         statuses = []
@@ -302,7 +322,22 @@ class SampleManager(object):
 
         # Print separator and header
         print ""
-        self.print_header(" MODULES ", 75, "=", False)
+        self.print_header(" FASTQC DATA ", header_length, "=", False)
+
+        # Print legend
+        print "{0:40}{1:50}".format("INFO", "VALUE")
+
+        # Get FASTQC data from sample
+        for fastq_number, fastqc_data in sample.fastqc_data.items():
+            # Only print data for this read
+            if fastq_number == read_number:
+                # Print every entry
+                for info_name, value in fastqc_data.items():
+                    print "{0:40}{1:50}".format(info_name, value)
+
+        # Print separator and header
+        print ""
+        self.print_header(" MODULES ", header_length, "=", False)
 
         # Print legend
         leg_module = "{0:50}".format("NAME")
