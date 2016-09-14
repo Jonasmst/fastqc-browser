@@ -161,7 +161,9 @@ class SampleManager(object):
 
         self.print_header(" MODULE STATS ", 75, "=")
         print '{0:{width}{base}} %5s\t%5s\t%5s'.format("MODULE", base="s", width=30) % ("PASS", "WARN", "FAIL")
-        for module, stats in self.module_stats.items():
+
+        for module in sorted(self.module_stats.keys()):
+            stats = self.module_stats[module]
             passes = stats["PASS"]
             warnings = stats["WARN"]
             failures = stats["FAIL"]
