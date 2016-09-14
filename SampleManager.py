@@ -1,4 +1,5 @@
 import sys
+import re
 
 
 class SampleManager(object):
@@ -120,8 +121,12 @@ class SampleManager(object):
             return
 
         # Print
-        for name, read_nums in samples_result.items():
-            print "%s has status '%s' in module '%s' in the read-files: %s" % (name, status_query, module_query, read_nums)
+        print "{0:30}{1:30}{2:10}{3:8}".format("SAMPLE NAME", "MODULE NAME", "STATUS", "FASTQ(s)")
+
+        for name in sorted(samples_result.keys(), key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)]):
+            read_nums = samples_result[name]
+            fastqs_string = " ".join([str(rn) for rn in read_nums])
+            print "{0:30}{1:30}{2:10}{3:8}".format(name, module_query, status_query.center(6), fastqs_string.center(8))
 
     def print_global_summary(self):
         """
