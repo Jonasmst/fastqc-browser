@@ -132,15 +132,27 @@ class SampleManager(object):
         """
         Print global summary (number of passes, warnings and failures)
         """
-        passes = self.num_passes
-        warnings = self.num_warnings
-        failures = self.num_failures
+        num_p = int(self.num_passes)
+        num_w = int(self.num_warnings)
+        num_f = int(self.num_failures)
 
         self.print_header(" GLOBAL STATS ", 75, "=")
+        print "{0:20}{1:20}{2:20}".format("PASS".center(20), "WARN".center(20), "FAIL".center(20))
+        total = float(num_p + num_w + num_f)
+        # Percentages
+        pct_p = (num_p / total) * 100
+        pct_w = (num_w / total) * 100
+        pct_f = (num_f / total) * 100
 
-        print "%5s\t%5s\t%5s" % ("PASS", "WARN", "FAIL")
-        print "%5s\t%5s\t%5s" % (passes, warnings, failures)
-        print ""
+        pct_p_str = "%.2f" % pct_p
+        pct_w_str = "%.2f" % pct_w
+        pct_f_str = "%.2f" % pct_f
+
+        passes = str(num_p) + " (" + pct_p_str + "%)"
+        warns = str(num_w) + " (" + pct_w_str + "%)"
+        fails = str(num_f) + " (" + pct_f_str + "%)"
+
+        print "{0:20}{1:20}{2:20}".format(passes.center(20), warns.center(20), fails.center(20))
 
     def print_module_stats(self):
         """
