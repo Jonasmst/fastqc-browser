@@ -13,6 +13,7 @@ module_descriptions = {
         """
 == Per Tile Sequence Quality ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/12%20Per%20Tile%20Sequence%20Quality.html)
+
 *Summary*
 This graph will only appear in your analysis results if you're using an Illumina library which retains its original sequence identifiers. Encoded in these is the flowcell tile from which each read came. The graph allows you to look at the quality scores from each tile across all of your bases to see if there was a loss in quality associated with only one part of the flowcell. The plot shows the deviation from the average quality for each tile. The colours are on a cold to hot scale, with cold colours being positions where the quality was at or above the average for that base in the run, and hotter colours indicate that a tile had worse qualities than other tiles for that base. In the example below you can see that certain tiles show consistently poor quality. A good plot should be blue all over.
 
@@ -33,6 +34,7 @@ Whilst warnings in this module can be triggered by individual specific events we
         """
 == Per Base Sequence Quality ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/2%20Per%20Base%20Sequence%20Quality.html)
+
 *Summary*
 This view shows an overview of the range of quality values across all bases at each position in the FastQ file.
 For each position a BoxWhisker type plot is drawn. The elements of the plot are as follows:
@@ -66,6 +68,7 @@ If your library has reads of varying length then you can find a warning or error
         """
 == Duplicate Sequences ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/8%20Duplicate%20Sequences.html)
+
 *Summary*
 In a diverse library most sequences will occur only once in the final set. A low level of duplication may indicate a very high level of coverage of the target sequence, but a high level of duplication is more likely to indicate some kind of enrichment bias (eg PCR over amplification).
 This module counts the degree of duplication for every sequence in a library and creates a plot showing the relative number of sequences with different degrees of duplication.
@@ -92,6 +95,7 @@ In RNA-Seq libraries sequences from different transcripts will be present at wil
         """
 == Per Base Sequence Content ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/4%20Per%20Base%20Sequence%20Content.html)
+
 *Summary*
 Per Base Sequence Content plots out the proportion of each base position in a file for which each of the four normal DNA bases has been called.
 In a random library you would expect that there would be little to no difference between the different bases of a sequence run, so the lines in this plot should run parallel with each other. The relative amount of each base should reflect the overall amount of these bases in your genome, but in any case they should not be hugely imbalanced from each other.
@@ -132,6 +136,7 @@ There are a number of common scenarios which would ellicit a warning or error fr
         """
 == Per Sequence GC Content ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/5%20Per%20Sequence%20GC%20Content.html)
+
 *Summary*
 This module measures the GC content across the whole length of each sequence in a file and compares it to a modelled normal distribution of GC content.
 In a normal random library you would expect to see a roughly normal distribution of GC content where the central peak corresponds to the overall GC content of the underlying genome. Since we don't know the the GC content of the genome the modal GC content is calculated from the observed data and used to build a reference distribution.
@@ -151,6 +156,7 @@ Warnings in this module usually indicate a problem with the library. Sharp peaks
         """
 == Sequence Length Distribution ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/7%20Sequence%20Length%20Distribution.html)
+
 *Summary*
 Some high throughput sequencers generate sequence fragments of uniform length, but others can contain reads of wildly varying lengths. Even within uniform length libraries some pipelines will trim sequences to remove poor quality base calls from the end.
 This module generates a graph showing the distribution of fragment sizes in the file which was analysed.
@@ -170,6 +176,7 @@ For some sequencing platforms it is entirely normal to have different read lengt
         """
 == Kmer Content ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/11%20Kmer%20Content.html)
+
 *Summary*
 The analysis of overrepresented sequences will spot an increase in any exactly duplicated sequences, but there are a different subset of problems where it will not work.
 \t- If you have very long sequences with poor sequence quality then random sequencing
@@ -196,6 +203,7 @@ Libraries which derive from random priming will nearly always show Kmer bias at 
         """
 == Basic Statistics ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/1%20Basic%20Statistics.html)
+
 *Summary*
 The Basic Statistics module generates some simple composition statistics for the file analysed.
 \t- Filename: The original filename of the file which was analysed
@@ -234,6 +242,7 @@ This module never raises warnings or errors
         """
 == Adapter Content ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/10%20Adapter%20Content.html)
+
 *Summary*
 The Kmer Content module will do a generic analysis of all of the Kmers in your library to find those which do not have even coverage through the length of your reads. This can find a number of different sources of bias in the library which can include the presence of read-through adapter sequences building up on the end of your sequences.
 You can however find that the presence of any overrepresented sequences in your library (such as adapter dimers) will cause the Kmer plot to be dominated by the Kmers these sequences contain, and that it's not always easy to see if there are other biases present in which you might be interested.
@@ -254,6 +263,7 @@ Any library where a reasonable proportion of the insert sizes are shorter than t
         """
 == Overrepresented Sequences ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/9%20Overrepresented%20Sequences.html)
+
 *Summary*
 A normal high-throughput library will contain a diverse set of sequences, with no individual sequence making up a tiny fraction of the whole. Finding that a single sequence is very overrepresented in the set either means that it is highly biologically significant, or indicates that the library is contaminated, or not as diverse as you expected.
 This module lists all of the sequence which make up more than 0.1% of the total. To conserve memory only sequences which appear in the first 100,000 sequences are tracked to the end of the file. It is therefore possible that a sequence which is overrepresented but doesn't appear at the start of the file for some reason could be missed by this module.
@@ -274,6 +284,7 @@ This module will often be triggered when used to analyse small RNA libraries whe
         """
 == Per Base N Content ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/6%20Per%20Base%20N%20Content.html)
+
 *Summary*
 If a sequencer is unable to make a base call with sufficient confidence then it will normally substitute an N rather than a conventional base] call
 This module plots out the percentage of base calls at each position for which an N was called.
@@ -294,6 +305,7 @@ Another common scenario is the incidence of a high proportions of N at a small n
         """
 == Per Sequence Quality Scores ==
 (Link: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/3%20Per%20Sequence%20Quality%20Scores.html)
+
 *Summary*
 The per sequence quality score report allows you to see if a subset of your sequences have universally low quality values. It is often the case that a subset of sequences will have universally poor quality, often because they are poorly imaged (on the edge of the field of view etc), however these should represent only a small percentage of the total sequences.
 If a significant proportion of the sequences in a run have overall low quality then this could indicate some kind of systematic problem - possibly with just part of the run (for example one end of a flowcell).
