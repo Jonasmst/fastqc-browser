@@ -283,22 +283,29 @@ class SampleManager(object):
         print ""
         self.print_header(" MODULES ", header_length, "=", False)
 
+        # Get number of FASTQ files in this sample
         num_fastqs = len(sample.html_reports.keys())
 
-        temp_module = "{0:50}".format("NAME")
-        temp_fastqs = "".join('{:10}'.format("FASTQ #" + str(s+1)) for s in range(0, num_fastqs))
-        print temp_module + temp_fastqs
+        print "TYPE: ", type(num_fastqs)
+        print "FASTQS: ", num_fastqs
+
+        # Print legend
+        legend = "{0:50}".format("NAME")
+        # Add FASTQ # x for every fastq file to the legend string
+        for x in range(num_fastqs):
+            legend += "{0:10}".format("FASTQ #" + str(x+1))
+        print legend
 
         # Loop modules
-        for module, fastqinfo in sample.modules.items():
+        for module in sorted(sample.modules.keys()):
+            fastqinfo = sample.modules[module]
 
-            # Create string
-            row_module = '{0:50}'.format(module)
+            # Same as above, format status for every fastq file
+            string = "{0:50}".format(module)
+            for status in fastqinfo.values():
+                string += "{0:10}".format(status.center(10))
 
-            # Create status string
-            status_str = "".join(s.center(10) for s in fastqinfo.values())
-
-            print row_module + status_str
+            print string
 
     def print_sample_details_by_readnumber(self, sample_name, read_number):
         """
