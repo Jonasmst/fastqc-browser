@@ -286,9 +286,6 @@ class SampleManager(object):
         # Get number of FASTQ files in this sample
         num_fastqs = len(sample.html_reports.keys())
 
-        print "TYPE: ", type(num_fastqs)
-        print "FASTQS: ", num_fastqs
-
         # Print legend
         legend = "{0:50}".format("NAME")
         # Add FASTQ # x for every fastq file to the legend string
