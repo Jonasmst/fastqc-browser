@@ -227,6 +227,19 @@ class Sample(object):
         if status.lower() == "fail":
             return self.failures
 
+    def get_number_of_reads(self):
+        """
+        Returns the number of reads in each FASTQ-file (as a list).
+        """
+
+        num_reads = []
+
+        # Loop FASTQs
+        for read_num, data in self.fastqc_data.items():
+            num_reads.append(int(data["Total Sequences"]))  # Cast it to int
+
+        return num_reads
+
     def __init__(self, sample_dir, parent_dir):
         self.name = os.path.basename(os.path.normpath(sample_dir))
         self.main_directory = sample_dir
@@ -236,7 +249,7 @@ class Sample(object):
         self.fastqc_data_files = {}
         self.fastqc_data = {}  # Format: {read_number: {info_name: value}}
         self.html_reports = {}
-        self.warnings = {}  # Format: r{ead_number: [modules]}
+        self.warnings = {}  # Format: {read_number: [modules]}
         self.passes = {}
         self.failures = {}
         self.modules = {}  # Format: {module_name: {read_num: status}}
