@@ -132,27 +132,72 @@ class SampleManager(object):
         """
         Print global summary (number of passes, warnings and failures)
         """
+
+        # Get number of passes, warnings and failures
         num_p = int(self.num_passes)
         num_w = int(self.num_warnings)
         num_f = int(self.num_failures)
 
+        # Print a header
         self.print_header(" GLOBAL STATS ", 75, "=")
+
+        # Print module statistics (passes, warnings, fails)
+        print ""
+        self.print_header(" Module stats ", 75, "*", False)
         print "{0:20}{1:20}{2:20}".format("PASS".center(20), "WARN".center(20), "FAIL".center(20))
+
+        # Calc percentages
         total = float(num_p + num_w + num_f)
-        # Percentages
         pct_p = (num_p / total) * 100
         pct_w = (num_w / total) * 100
         pct_f = (num_f / total) * 100
-
         pct_p_str = "%.2f" % pct_p
         pct_w_str = "%.2f" % pct_w
         pct_f_str = "%.2f" % pct_f
-
         passes = str(num_p) + " (" + pct_p_str + "%)"
         warns = str(num_w) + " (" + pct_w_str + "%)"
         fails = str(num_f) + " (" + pct_f_str + "%)"
 
+        # Print stats
         print "{0:20}{1:20}{2:20}".format(passes.center(20), warns.center(20), fails.center(20))
+
+        # Get median and mean number of reads
+        mean, median = self.get_stats_number_of_reads()
+
+        # Sanity check return values
+        if mean == -1 or median == -1:
+            print "ERROR: Something went wrong when calculating number of reads"
+            return
+
+        print ""
+        self.print_header(" Number of reads ", 75, "*", False)
+        print "{0:20}{1:20}".format("MEAN".center(20), "MEDIAN".center(20))
+        print "{0:20}{1:20}".format(str(int(mean)).center(20), str(int(median)).center(20))  # Round to ints, we don't need decimals
+
+    def get_stats_number_of_reads(self):
+        """
+        Gets the number of reads from each sample and calcs global mean and median number of reads.
+        """
+
+        # Container for read counts
+        num_reads = []
+
+        # Loop samples and get read counts for each
+        for sample in self.all_samples:
+            num_reads += sample.get_number_of_reads()
+
+        # Try to import numpy
+        try:
+            import numpy as np
+        except ImportError as e:
+            print "ERROR: Could not import module 'numpy'. (%s)" % e
+            return -1, -1
+
+        # Calc mean and median
+        mean_num_reads = np.mean(num_reads)
+        median_num_reads = np.median(num_reads)
+
+        return mean_num_reads, median_num_reads
 
     def print_module_stats(self):
         """
@@ -188,17 +233,17 @@ class SampleManager(object):
 
         print '{0:{width}{base}} %5s\t%5s\t%5s'.format("MODULE", base="s", width=30) % ("PASS", "WARN", "FAIL")
 
-        container = {}  # Format: module_name: failed_counts
+        container = {}  # Format: module_name: counts
 
-        # Loop modules and extract number of failures
+        # Loop modules and extract number of passes/warnings/failures
         for module, status in self.module_stats.items():
             if module not in container.keys():
                 container[module] = status[status_query]
             else:
                 print "Warning: print_modules_orderby_status(); dict already contains module"
 
-        # Print list of modules ordered by failures
-        for module, fails in sorted(container.items(), key=lambda x: x[1], reverse=True):
+        # Print list of modules ordered by passes/warnings/failures
+        for module, status in sorted(container.items(), key=lambda x: x[1], reverse=True):
             passes = self.module_stats[module]["PASS"]
             warns = self.module_stats[module]["WARN"]
             fails = self.module_stats[module]["FAIL"]
