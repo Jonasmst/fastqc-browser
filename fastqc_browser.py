@@ -656,7 +656,7 @@ def read_input(sample_manager):
             readline.parse_and_bind('tab: complete')
 
             # Read module name
-            module_name = raw_input("> Module name: ")
+            module_name = raw_input(">> Module name: ")
 
             # Validate
             if module_name not in supported_module_names:
