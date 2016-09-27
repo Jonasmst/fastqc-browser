@@ -162,21 +162,27 @@ class SampleManager(object):
         print "{0:20}{1:20}{2:20}".format(passes.center(20), warns.center(20), fails.center(20))
 
         # Get median and mean number of reads
-        mean, median = self.get_stats_number_of_reads()
+        reads_stats = self.get_stats_number_of_reads()
 
         # Sanity check return values
-        if mean == -1 or median == -1:
-            print "ERROR: Something went wrong when calculating number of reads"
+        if reads_stats == -1:
+            print "ERROR: Something went wrong when calculating number of reads (probably that numpy doesn't exist on the system)."
             return
+
+        mean = reads_stats["mean"]
+        median = reads_stats["median"]
+        low = reads_stats["low"]
+        high = reads_stats["high"]
 
         print ""
         self.print_header(" Number of reads ", 75, "*", False)
-        print "{0:20}{1:20}".format("MEAN".center(20), "MEDIAN".center(20))
-        print "{0:20}{1:20}".format(str(int(mean)).center(20), str(int(median)).center(20))  # Round to ints, we don't need decimals
+        print "{0:20}{1:20}{2:20}{3:20}".format("MEAN".center(20), "MEDIAN".center(20), "MIN".center(20), "MAX".center(20))
+        print "{0:20}{1:20}{2:20}{3:20}".format(str(int(mean)).center(20), str(int(median)).center(20), str(int(low)).center(20), str(int(high)).center(20))  # Round to ints, we don't need decimals
 
     def get_stats_number_of_reads(self):
         """
         Gets the number of reads from each sample and calcs global mean and median number of reads.
+        :return reads_stats: Dictionary of read number metrics where keys are metrics (mean, median, low, high)
         """
 
         # Container for read counts
@@ -191,13 +197,24 @@ class SampleManager(object):
             import numpy as np
         except ImportError as e:
             print "ERROR: Could not import module 'numpy'. (%s)" % e
-            return -1, -1
+            return -1
 
         # Calc mean and median
         mean_num_reads = np.mean(num_reads)
         median_num_reads = np.median(num_reads)
 
-        return mean_num_reads, median_num_reads
+        # Get lowest and highest
+        low_num_reads = min(num_reads)
+        high_num_reads = max(num_reads)
+
+        reads_stats = {
+            "mean": mean_num_reads,
+            "median": median_num_reads,
+            "low": low_num_reads,
+            "high": high_num_reads
+        }
+
+        return reads_stats
 
     def print_module_stats(self):
         """
